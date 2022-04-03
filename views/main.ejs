@@ -1,0 +1,100 @@
+<h1 class="mainHeader">Main page</h1>
+<div class="mainSearchBar"><input type="text" id='search' placeholder="search"/></div>
+<div class="hashtagsContainer"><h3>Hashtags:</h3>
+    <div class="hashtagContainer">
+    <% if(!allHashtags.length) { %>
+    <span>No hashtags</span>
+    <% } else { %>
+    <% allHashtags.forEach(hashtag => { %>
+    <span class="hashtag" id="<%=hashtag%>"><%=hashtag%></span>
+    <%})%>
+    <% } %>
+    </div>
+</div>
+
+<div class="mainAllPostsContainer"></div>
+<div class="mainPagination"></div>
+
+<script type="text/javascript">
+    let posts = <%-postsString%>
+    let allPosts = <%-allPosts%>
+    let pagination = <%-pagination%>
+
+    const addToFavorites = () => {
+        $('.favoriteIcon').click(function (e){
+            e.stopPropagation()
+            const token = localStorage.getItem('token')
+            if(!token) return alert('You need to log in first')
+            const postId = $(this).attr('id').split('_')[1]
+            fetch('/api/addFavorite', {method: 'post', body: JSON.stringify({token, postId}), headers: {'Content-Type': 'application/json'}})
+            .then(response => response.json()).then(result => {alert('Post added to your favorites')})
+            .catch(err => {if(err) {console.log(err)}})
+        })
+    }
+
+    const addClick = () => {$('.firstRow').click(function(){$(this).siblings().eq(0).toggle(500)})}
+
+    const postConstructor = (post) => {
+        const mapping = (post) => post.hashtags.map(hashtag => `<span class='hashtag'>${hashtag}</span>`)
+        return `<div class="mainOnePostContainer">
+                <div class="firstRow" style="background-image: url(${post.imgUrl}); background-position: center; background-size: cover">
+                    <h3 id='h_${post._id}' class="header">${post.title}</h3> <span id='fv_${post._id}' class="favoriteIcon">⭐</span>
+                </div>
+                <div class="secondRow" style="display: none">
+                    <p id="ht_${post._id}" class="hashtags">${post.hashtags.length ? mapping(post).join('') : 'No hashtags defined'}</p>
+                    <p id='c_${post._id}' class="content">${post.content}<br/></p>
+                    <p class='author'>Author: <a href='${post.author._id}'>${post.author.username}</a><br/></p>
+                    <p class="date">Created at: ${post.date.toString().split('T')[0]}</p>
+                </div>
+            </div>`
+    }
+    $('.mainAllPostsContainer').html(!allPosts.length ? 'No posts' : pagination[0].map(post => postConstructor(post)))
+    addClick()
+    addToFavorites()
+
+    const addPagination = () => {for(let i = 1 ; i <= pagination.length ; i++){
+        if($('.mainPagination').children().length === pagination.length) break
+        $('.mainPagination').append($('<h4></h4>').attr('id', 'page'+(i-1)).text(i))}
+        for(let i = 0 ; i < pagination.length ; i++){
+            $(`#page${i}`).click(function (){
+                const posts = pagination[i].map(post => {return postConstructor(post)})
+                $('.mainAllPostsContainer').html(posts)
+                addClick()
+                addToFavorites()
+            })
+        }
+    }
+    addPagination()
+
+
+    const filterByHashtag = () => {
+        $('.hashtag').click(function (){
+            const fittingPosts = allPosts.filter(post => post.hashtags.includes($(this).attr('id').trim()))
+            $('.mainAllPostsContainer').html(fittingPosts.map(post => postConstructor(post)))
+            addClick()
+            addToFavorites()
+            $('.mainPagination').children().remove()
+        })
+    }
+    filterByHashtag()
+
+    const blockwidth = $('.postImage').parent().css('width')
+    $('.postImage').css('width', blockwidth)
+
+    const search = $('#search')
+    $(search).on('keyup', () => {
+        if(posts.map(item => item.title.toLowerCase()).includes(search.val().toLowerCase())) {
+            const response = posts.filter(item => item.title.toLowerCase() === search.val().toLowerCase()).map(post => {
+                return postConstructor(post)})[0]
+            $('.mainAllPostsContainer').html(response)
+            addClick()
+            addToFavorites()
+            $('.mainPagination').children().remove()
+        } else {
+            $('.mainAllPostsContainer').html(!allPosts.length ? 'No posts' : pagination[0].map(post => postConstructor(post)))
+            addClick()
+            addToFavorites()
+            if($('.mainPagination').children()) {addPagination()}
+        }
+    })
+</script>

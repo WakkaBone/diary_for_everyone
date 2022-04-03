@@ -1,0 +1,158 @@
+@font-face {
+    font-family: 'ccdeardiaryregular';
+    src: url('ccdeardiary-webfont.woff2') format('woff2'),
+    url('ccdeardiary-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'monita_signature_personalBdIt';
+    src: url('monitasignaturepersonaluse-bolditalic-webfont.woff2') format('woff2'),
+    url('monitasignaturepersonaluse-bolditalic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+*{padding: 0; margin: 0}
+.mainContainer{background-color: #FEFEFE}
+.bodyContainer{padding: 10px}
+/*HEADER*/
+.headerMainContainer{display: flex; background-color: whitesmoke; align-items: center}
+.headerLogoBlock{flex: 2; display: flex; align-items: center}
+.headerLogo{height: 50px; width: 50px; background-size: contain; background-repeat: no-repeat; margin-left: 30px}
+.headerLogoTitle{margin-left: 10px}
+.greeting{flex: 1; font-family: 'ccdeardiaryregular', Arial, SansSerif; font-weight: bold; font-size: 1.5em}
+.slogan{font-family: 'monita_signature_personalBdIt', Arial, SansSerif; font-weight: bold; font-size: 1.5rem; display: inline-flex; margin-top: 10px}
+.headerNavigationBlock{flex: 2; display: flex; justify-content: center}
+.headerNavigationBlock ul{list-style: none; text-align: center}
+.headerNavigationBlock li{display: inline; margin-left: 10px}
+.headerAuthBlock{flex: 1; display: flex; justify-content: flex-end}
+.headerAuthBlock button{display: inline}
+.headerMainContainerMobile{display: none}
+.mainSearchBar{width: 80%; margin: auto; margin-bottom: 10px}
+.mainSearchBar input{width: 100%}
+
+.header{display: inline}
+
+.mainPagination{display: flex; justify-content: space-around; padding: 20px}
+.mainPagination h4:hover{cursor: pointer}
+
+.hashtag{border: 1px solid black; margin: 10px 5px 5px 0; padding: 3px}
+.hashtag:hover{cursor: pointer}
+.hashtag::before{content: '#'}
+.hashtagContainer{margin: 5px 20px 10px 20px; min-width: 20%; min-height: 20%; box-sizing: border-box; border: 1px solid black; padding: 20px}
+
+.hashtags{margin: 10px 5px 20px 5px}
+.content{margin: 10px}
+.author, .date{font-size: 0.9em; margin: 0 0 0 5px}
+.date{margin-bottom: 5px}
+
+.authModalWindow{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 9999;
+    display: flex;
+    background-color: rgba(0, 0, 0, 0.25);
+    animation-name: appear;
+    animation-duration: 300ms;
+}
+.authModalWindowContainer{
+    background-color: white;
+    border: 5px solid rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.loginModalWindow{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 9999;
+    display: flex;
+    /*align-items: center;*/
+    /*justify-content: center;*/
+    background-color: rgba(0, 0, 0, 0.25);
+    animation-name: appear;
+    animation-duration: 300ms;
+}
+.loginModalWindowContainer{
+    background-color: white;
+    border: 5px solid rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.mainAllPostsContainer{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+.mainOnePostContainer{
+    display: flex; flex-direction: column;
+    width: 30%;
+    margin: 1%;
+    border: 1px solid black;
+    flex-wrap: wrap;
+    overflow: hidden;
+    box-sizing: content-box;
+}
+.mainOnePostContainer h3{background-color: whitesmoke}
+.mainOnePostContainer h3:hover{cursor: pointer}
+
+.firstRow{
+    display: flex;
+    height: 100px;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+.secondRow{
+    margin: 10px 0 0 0;
+}
+
+
+
+.createPostForm{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+}
+
+.mainHeader{margin: 10px}
+.greetingMobile{display: none}
+.favoriteIcon, .deleteFavoriteIcon{font-size: 1.5rem; margin: 5px}
+.favoriteIcon:hover, .deleteFavoriteIcon:hover{cursor: pointer}
+
+@media (max-width: 600px) {
+    .headerMainContainer{display: none}
+    .headerMainContainerMobile{display: flex; flex-direction: row; align-items: flex-start; justify-content: space-around}
+    .headerNavigationBlockMobile{display: flex; flex-direction: column}
+    .headerMenuBlock{flex:1}
+    .headerAuthBlock{flex: 1}
+    .headerLogo{height: 10vh; width: 10vh; margin-left: 0}
+    .greetingMobile{display: flex; margin-top: 10px; width: 100%; justify-content: center; font-family: 'ccdeardiaryregular', Arial, SansSerif; font-weight: bold; font-size: 1.5em}
+    .mainOnePostContainer{width: 47%; flex-wrap: nowrap}
+    .hashtags{display: flex; flex-wrap: wrap; margin: 5px 5px 5px 5px}
+    .createPostForm{flex-direction: column}
+    .createPostForm *{margin-bottom: 10px}
+    .greetingMobile{flex: 1; text-align: center}
+    .dropDownButton{padding: 7px}
+    .formContainer{display: flex; justify-content: center}
+    /*.hashtag{margin: 40px}*/
+}
+
+@media (max-width: 440px) {
+.firstRow{flex-direction: column;}
+}

@@ -1,0 +1,39 @@
+<h1 class="mainHeader">All posts by <%=posts[0].author.username%></h1>
+<button id="descendingButton">New posts first</button>
+<button id="ascendingButton">Old posts first</button>
+<div class="mainAllPostsContainer">
+
+</div>
+
+<script>
+    const postsDescending = <%-postsDescending%>
+    const postsAscending = <%-postsAscending%>
+
+    const postConstructor = (post) => {
+        const mapping = (post) => post.hashtags.map(hashtag => `<span class='hashtag'>${hashtag}</span>`)
+        return `<div class="mainOnePostContainer">
+                <div class="firstRow" style="background-image: url(${post.imgUrl}); background-position: center; background-size: cover">
+                    <h3 id='h_${post._id}' class="header">${post.title}</h3>
+                </div>
+                <div class="secondRow" style="display: none">
+                    <p id="ht_${post._id}" class="hashtags">${post.hashtags.length ? mapping(post).join('') : 'No hashtags defined'}</p>
+                    <p id='c_${post._id}' class="content">${post.content}<br/></p>
+                    <p class="date">Created at: ${post.date.toString().split('T')[0]}</p>
+                </div>
+            </div>`
+    }
+
+    $('.mainAllPostsContainer').html(!postsDescending.length ? 'No posts' : postsDescending.map(post => postConstructor(post)))
+
+    const addClick = () => {$('.firstRow').click(function(){$(this).siblings().eq(0).toggle(500)})}
+    addClick()
+
+    $('#ascendingButton').click(function (){
+        $('.mainAllPostsContainer').html(postsAscending.map(post => postConstructor(post)))
+        addClick()
+    })
+    $('#descendingButton').click(function (){
+        $('.mainAllPostsContainer').html(postsDescending.map(post => postConstructor(post)))
+        addClick()
+    })
+</script>

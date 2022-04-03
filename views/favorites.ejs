@@ -1,0 +1,54 @@
+<h1 class="mainHeader">Favorites</h1>
+<div class="mainAllPostsContainer"></div>
+
+<script>
+    const token = localStorage.getItem('token')
+    if(!token) {
+        alert('You need to log in first')
+        window.location.href = '/'
+    }
+
+    const addClick = () => {$('.firstRow').click(function(){$(this).siblings().eq(0).toggle(500)})}
+
+    const postConstructor = (post) => {
+        const mapping = (post) => post.hashtags.map(hashtag => `<span class='hashtag'>${hashtag}</span>`)
+        return `<div class="mainOnePostContainer">
+                <div class="firstRow" style="background-image: url(${post.imgUrl}); background-position: center; background-size: cover">
+                    <h3 id='h_${post._id}' class="header">${post.title}</h3> <span id='df_${post._id}' class="deleteFavoriteIcon">❌</span>
+                </div>
+                <div class="secondRow" style="display: none">
+                    <p id="ht_${post._id}" class="hashtags">${post.hashtags.length ? mapping(post).join('') : 'No hashtags defined'}</p>
+                    <p id='c_${post._id}' class="content">${post.content}<br/></p>
+                    <p class='author'>Author: <a href='${post.author._id}'>${post.author.username}</a><br/></p>
+                    <p class="date">Created at: ${post.date.toString().split('T')[0]}</p>
+                </div>
+            </div>`
+    }
+
+const addDeleteFavorite = async () => {
+        const token = localStorage.getItem('token')
+        $('.deleteFavoriteIcon').click(function (e){
+            e.stopPropagation()
+            const postId = $(this).attr('id').split('_')[1]
+            fetch('/api/favorites', {method: 'delete', body: JSON.stringify({token, postId}), headers: {'Content-Type': 'application/json'}})
+            .then(response => response.json()).then(result => {location.reload()})
+            .catch(err => {if(err) console.log(err)})
+        })
+}
+
+const getFavorites = async () => {
+    const token = localStorage.getItem('token')
+    if(!token) {}//TODO
+    fetch('/api/favorites', {method: 'post', body: JSON.stringify({token}), headers: {'Content-Type': 'application/json'}})
+    .then(response => response.json()).then(result => {
+        if(!result.userAndPosts[0].favorites.length) $('.mainAllPostsContainer').append(`<h3>Your favorites are empty</h3>`)
+        else {
+            result.userAndPosts[0].favorites.forEach(post => $('.mainAllPostsContainer').append(postConstructor(post)))
+            addClick()
+            addDeleteFavorite()
+        }
+    })
+    .catch(err => {if(err) {console.log(err)}}) //TODO
+}
+getFavorites()
+</script>

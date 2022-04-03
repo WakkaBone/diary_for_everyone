@@ -1,0 +1,25 @@
+const validator = require('express-validator')
+const {Router: ApiRouter} = require('express')
+const bodyParser = require('body-parser')
+const apiRouter = ApiRouter()
+const apiController = require('../controllers/apiController')
+apiRouter.use(bodyParser.json())
+apiRouter.use(bodyParser.urlencoded({extended: false}))
+const fileUploader = require('express-fileupload')
+apiRouter.use(fileUploader())
+
+
+apiRouter.post('/user', apiController.getCurrentUser)
+apiRouter.post('/users', [validator.check('username', 'Please enter your username').notEmpty(), validator.check('email', 'Please enter a valid email').isEmail(), validator.check('password', 'Password must be minimum 6 characters long').isLength({min: 6})], apiController.createUser)
+apiRouter.post('/login', apiController.login)
+apiRouter.get('/posts', apiController.getPosts)
+apiRouter.post('/posts', [validator.check('title', 'Please enter the title!').notEmpty(), validator.check('content', 'Please enter the content!').notEmpty()], apiController.createPost)
+apiRouter.put('/posts', apiController.updatePost)
+apiRouter.delete('/posts', apiController.deletePost)
+apiRouter.post('/myposts', apiController.getMyPosts)
+apiRouter.post('/addFavorite', apiController.addToFavorites)
+apiRouter.post('/favorites', apiController.getMyFavorites)
+apiRouter.delete('/favorites', apiController.deleteFromMyFavorites)
+
+apiRouter.post('/upload', apiController.uploadImage)
+module.exports = apiRouter

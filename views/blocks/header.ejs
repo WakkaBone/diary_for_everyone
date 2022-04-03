@@ -1,0 +1,157 @@
+<div class="headerMainContainer">
+    <div class="headerLogoBlock">
+        <div class="headerLogo" style="background-image: url('diary-svgrepo-com.svg')"></div>
+        <div class="headerLogoTitle"><a href='/'><span class="slogan">Diary for everyone</span></a></div>
+    </div>
+
+    <div class="greeting"></div>
+
+    <div class="headerNavigationBlock"><ul>
+            <li id="mainPageNav"><a id="mainPageLink">Main page</a></li>
+            <li id="myPostsNav"><a id="myPostsLink">My posts</a></li>
+            <li id="favoritesNav"><a id="favoritesLink">My favorites</a></li>
+            <li id="createPostNav"><a id="createPostLink">Create a post</a></li>
+        </ul></div>
+    <div class="headerAuthBlock">
+        <button id="signInButtonNav" onclick="loginHandler()">Sign in</button>
+        <button id="signUpButtonNav" onclick="signUpHandler()">Sign up</button>
+        <button id="signOutButtonNav" onclick="signOutHandler()">Sign out</button>
+    </div>
+</div>
+
+<div class="headerMainContainerMobile">
+    <div class="headerMenuBlock"><button class="dropDownButton">Menu</button>
+    <div class="headerNavigationBlockMobile" style="display: none"><ul>
+            <li id="mainPageNavMobile"><a id="mainPageLinkMobile">Main page</a></li>
+            <li id="myPostsNavMobile"><a id="myPostsLinkMobile">My posts</a></li>
+            <li id="favoritesNavMobile"><a id="favoritesLinkMobile">My favorites</a></li>
+            <li id="createPostNavMobile"><a id="createPostLinkMobile">Create a post</a></li>
+        </ul></div></div>
+    <div class="headerLogoBlock">
+        <div class="headerLogo" style="background-image: url('diary-svgrepo-com.svg')"></div>
+        <div class="headerLogoTitle"><a href='/'><span class="slogan">Diary for everyone</span></a></div>
+    </div>
+    <div class="headerAuthBlock">
+        <button id="signInButtonNavMobile" onclick="loginHandler()">Sign in</button>
+        <button id="signUpButtonNavMobile" onclick="signUpHandler()">Sign up</button>
+        <button id="signOutButtonNavMobile" onclick="signOutHandler()">Sign out</button>
+    </div>
+</div>
+
+<div onclick="close()" class="authModalWindow" style="display: none">
+    <div class="authModalWindowContainer">
+        <div><h3>Sign up</h3></div>
+        <div><label>Username: <input id="username" class="signUpInputs" type="text"></label></div>
+        <div><label>Email: <input id="email" class="signUpInputs" type="text"></label></div>
+        <div><label>Password: <input id="password" class="signUpInputs" type="password"></label></div>
+        <div><button id="signUp">Sign up</button></div>
+    </div>
+</div>
+
+<div onclick="close()" class="loginModalWindow" style="display: none">
+    <div class="loginModalWindowContainer">
+        <div><h3>Sign in</h3></div>
+        <div><label>Email: <input id="loginEmail" class="signInInputs" type="text"></label></div>
+        <div><label>Password: <input id="loginPassword" class="signInInputs" type="password"></label></div>
+        <div><button id="signIn">Sign in</button></div>
+    </div>
+</div>
+<div class="greetingMobile"></div>
+
+<script>
+    $(() => {
+        const token = localStorage.getItem('token')
+        if(!token) {
+            $('.dropDownButton').css('display', 'none')
+            $('#signOutButtonNav').css('display', 'none')
+            $('#createPostNav').css('display', 'none')
+            $('#favoritesNav').css('display', 'none')
+            $('#myPostsNav').css('display', 'none')
+            $('#mainPageLink').attr('href', '/')
+            $('#signOutButtonNavMobile').css('display', 'none')
+            $('#createPostNavMobile').css('display', 'none')
+            $('#myPostsNavMobile').css('display', 'none')
+        } else {
+            fetch('/api/user', {method: 'post', body: JSON.stringify({token}), headers: {'Content-Type': 'application/json'}})
+            .then(response => response.json()).then(result => {
+                const greeting = $('<span></span>').addClass('greetingMobile').text(`Hello, ${result.username}`)
+                $('.greeting').html(`<span>Hello, ${result.username}</span>`)
+                $('.greetingMobile').html(`<span>Hello, ${result.username}</span>`)
+            })
+            $('#signInButtonNav').css('display', 'none')
+            $('#signUpButtonNav').css('display', 'none')
+            $('#signInButtonNavMobile').css('display', 'none')
+            $('#signUpButtonNavMobile').css('display', 'none')
+            $('#mainPageLink').attr('href', '/')
+            $('#myPostsLink').attr('href', '/myposts')
+            $('#favoritesLink').attr('href', '/favorites')
+            $('#createPostLink').attr('href', '/create')
+        }
+    })
+
+    $('.dropDownButton').click(function (){
+        $(this).next().toggle(500, () => $(this).text() === 'Menu' ? $(this).text('Hide') : $(this).text('Menu'))
+        $('#mainPageLinkMobile').attr('href', '/')
+        $('#favoritesLinkMobile').attr('href', '/favorites')
+        $('#myPostsLinkMobile').attr('href', '/myposts')
+        $('#createPostLinkMobile').attr('href', '/create')
+    })
+
+    const modal = $('.authModalWindow')
+    modal.click(e => $('.authModalWindow').css('display', 'none'))
+    const block = $('.authModalWindowContainer')
+    block.click(e => e.stopPropagation())
+    const modalLogin = $('.loginModalWindow')
+    modalLogin.click(e => $('.loginModalWindow').css('display', 'none'))
+    const blockLogin = $('.loginModalWindowContainer')
+    blockLogin.click(e => e.stopPropagation())
+
+    $('#username').on('keyup', () => $('#message').text(''))
+    $('#email').on('keyup', () => $('#message').text(''))
+    $('#password').on('keyup', () => $('#message').text(''))
+    $('#loginEmail').on('keyup', () => $('#message').text(''))
+    $('#loginPassword').on('keyup', () => $('#message').text(''))
+
+    const signOutHandler = () => {
+        localStorage.removeItem('token')
+        location.reload()
+    }
+
+    const loginHandler = () => {
+        $('.loginModalWindow').css('display', 'inline')
+        $('#signIn').click(() => {
+            fetch('/api/login', {method: 'post', body: JSON.stringify({email: $('#loginEmail').val(), password: $('#loginPassword').val()}), headers: {'Content-Type': 'application/json'}})
+            .then(reponse => reponse.json()).then(result => {
+                const token = result.token
+                if(!token) {
+                    const message = $('<span></span>').attr('id', 'message').text(result.error)
+                    $('#signIn').after(message)
+                    return
+                }
+                localStorage.setItem('token', token)
+                alert('Logged in!')
+                window.location.href = '/'
+            })
+        })
+    }
+
+    const signUpHandler = () => {
+        $('.authModalWindow').css('display', 'inline')
+        $('#signUp').click(() => {
+            fetch('/api/users', {method: 'post', body: JSON.stringify({username: $('#username').val(), email: $('#email').val(), password: $('#password').val(),}), headers: {'Content-Type': 'application/json'}})
+                .then(response => {return response.json()}).then(result => {
+                    if(!result.errors){
+                        alert('User has been created!')
+                        window.location.href = '/'
+                    } else {
+                        let errors = []
+                        result.errors.forEach(error => errors.push(error.msg))
+                        const message = $('<span></span>').attr('id', 'message').text(errors[0])
+                        $('#signUp').after(message)
+                        $('#username').val('')
+                        $('#email').val('')
+                        $('#password').val('')
+                    }}).catch(e => {if(e) console.log(e)})
+        })
+    }
+</script>
